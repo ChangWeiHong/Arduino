@@ -1,0 +1,46 @@
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+int sensorPin = 0;
+
+void setup()
+{
+  lcd.begin();
+  Serial.begin(9600);
+  lcd.backlight();
+  
+  }
+ 
+void loop()                     // run over and over again
+{
+ //getting the voltage reading from the temperature sensor
+ int reading = analogRead(sensorPin);  
+ 
+ // converting that reading to voltage, for 3.3v arduino use 3.3
+ float voltage = reading;
+ voltage /= 1024.0; 
+ voltage *=3.29545454545;
+ voltage = 5-voltage;
+Serial.print(voltage);
+ 
+ // print out the voltage
+ Serial.print(voltage); Serial.println(" volts");
+ 
+ // now print out the temperature
+ float temperatureC = (voltage - 1.1) * 10 ;  //converting from 10 mv per degree wit 500 mV offset
+                                               //to degrees ((voltage - 500mV) times 100)
+ Serial.print(temperatureC); Serial.println(" degrees C");
+ 
+ // now convert to Fahrenheit
+ float temperatureF = (temperatureC * 9.0 / 5.0) + 32.0;
+ Serial.print(temperatureF); Serial.println(" degrees F");
+
+  lcd.clear();
+  lcd.print("Celcius: ");
+  lcd.print(temperatureC);  
+  lcd.setCursor(0,1);
+  lcd.print("Farenheit: ");
+  lcd.print(temperatureF);
+ delay(5000);                                     
+}
